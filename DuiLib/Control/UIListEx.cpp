@@ -1287,7 +1287,9 @@ Label_ForeImage:
 
 			DWORD iTextBkColor = 0;
 			if (GetColumItemColor(i, iTextBkColor))
-			{	
+			{
+				RECT item_bkcolor_rect = rcItem;
+				::InflateRect(&item_bkcolor_rect, -2, -2);
 				CRenderEngine::DrawColor(hDC, rcItem, iTextBkColor);
 			}
 

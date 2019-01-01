@@ -47,6 +47,8 @@ namespace DuiLib {
 
 		virtual BOOL CheckColumCheckBoxable(int nColum);
 
+		void SetReadOnly(bool bReadOnly);
+
 	public:
 		virtual void Notify(TNotifyUI& msg);
 		BOOL	m_bAddMessageFilter;
@@ -68,6 +70,9 @@ namespace DuiLib {
 
 	private:
 		void HideEditAndComboCtrl();
+
+	private:
+		bool m_bReadOnly;
 	};
 
 	/////////////////////////////////////////////////////////////////////////////////////
@@ -298,12 +303,35 @@ namespace DuiLib {
 			DWORD iBKColor;
 		}COLUMCOLORNODE;
 
+		struct COLUM_TEXT_COLOR_INFO
+		{
+			bool is_enable;
+			DWORD text_color;
+			COLUM_TEXT_COLOR_INFO() :
+				is_enable(false),
+				text_color(0xFF000000)
+			{}
+		};
+
+		struct COLUM_TEXT_FONT_INFO
+		{
+			bool is_enable;
+			int text_font;
+			COLUM_TEXT_FONT_INFO() :
+				is_enable(false),
+				text_font(0)
+			{}
+		};
+
 		COLUMCOLORNODE ColumCorlorArray[UILIST_MAX_COLUMNS];
+		COLUM_TEXT_COLOR_INFO m_arr_colum_text_color[UILIST_MAX_COLUMNS];
+		COLUM_TEXT_FONT_INFO m_arr_colum_text_font[UILIST_MAX_COLUMNS];
 
 	public:
 		void SetColumItemColor(int nColum, DWORD iBKColor);
 		BOOL GetColumItemColor(int nColum, DWORD& iBKColor);
-
+		void SetColumTextColor(int nColum, DWORD text_color);
+		void SetColumTextFont(int nColum, DWORD text_font);
 	};
 } // namespace DuiLib
 

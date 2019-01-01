@@ -44,6 +44,17 @@ namespace DuiLib
 		m_uMessage = UIMSG_TRAYICON;
 	}
 
+	BOOL CTrayIcon::ShowBubbleTip(LPCTSTR lpText)
+	{
+		m_trayData.uFlags |= NIF_INFO;
+		m_trayData.uTimeout = 1 * 1000;
+		m_trayData.dwInfoFlags = NIIF_INFO;
+		//m_trayData.uVersion = NOTIFYICON_VERSION;
+		//if (lpTitle) _tcscpy(m_trayData.szInfoTitle, lpTitle);
+		if (lpText) _tcscpy(m_trayData.szInfo, lpText);
+		return Shell_NotifyIcon(NIM_MODIFY, &m_trayData);
+	}
+
 	bool CTrayIcon::SetTooltipText( LPCTSTR _ToolTipText )
 	{
 		if(_ToolTipText) _tcscpy(m_trayData.szTip,_ToolTipText);

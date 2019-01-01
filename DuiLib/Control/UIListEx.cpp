@@ -8,7 +8,8 @@ namespace DuiLib {
 	//
 	IMPLEMENT_DUICONTROL(CListExUI)
 
-	CListExUI::CListExUI() : m_pEditUI(NULL), m_pComboBoxUI(NULL), m_bAddMessageFilter(FALSE),m_nRow(-1),m_nColum(-1),m_pXCallback(NULL)
+	CListExUI::CListExUI() : m_pEditUI(NULL), m_pComboBoxUI(NULL), m_bAddMessageFilter(FALSE),m_nRow(-1),m_nColum(-1),m_pXCallback(NULL),
+		m_bReadOnly(false)
 	{
 	}
 
@@ -40,6 +41,12 @@ namespace DuiLib {
 			m_bAddMessageFilter = TRUE;
 		}
 	}
+
+	void CListExUI::SetReadOnly(bool bReadOnly)
+	{
+		m_bReadOnly = true;
+	}
+
 	CRichEditUI* CListExUI::GetEditUI()
 	{
 		if (m_pEditUI == NULL)
@@ -57,6 +64,8 @@ namespace DuiLib {
 			m_pEditUI->SetFloat(true);
 			m_pEditUI->SetAttribute(_T("autohscroll"), _T("true"));
 			Add(m_pEditUI);
+			if (m_bReadOnly)
+				m_pEditUI->SetReadOnly(true);
 		}
 		if (m_pComboBoxUI)
 		{
@@ -1293,6 +1302,12 @@ Label_ForeImage:
 				CRenderEngine::DrawColor(hDC, rcItem, iTextBkColor);
 			}
 
+			DWORD text_color = iTextColor;
+			if (m_arr_colum_text_color[i].is_enable)
+			{
+				text_color = m_arr_colum_text_color[i].text_color;
+			}
+
 			rcItem.left += pInfo->rcTextPadding.left;
 			rcItem.right -= pInfo->rcTextPadding.right;
 			rcItem.top += pInfo->rcTextPadding.top;
@@ -1306,15 +1321,21 @@ Label_ForeImage:
 				rcItem.left += (rcCheckBox.right - rcCheckBox.left);
 			}
 
+			int text_font = pInfo->nFont;
+			if (m_arr_colum_text_font[i].is_enable)
+			{
+				text_font = m_arr_colum_text_font[i].text_font;
+			}
+
 			CDuiString strText;//不使用LPCTSTR，否则限制太多 by cddjr 2011/10/20
 			if( pCallback ) strText = pCallback->GetItemText(this, m_iIndex, i);
 			else strText.Assign(GetText(i));
 			if( pInfo->bShowHtml )
-				CRenderEngine::DrawHtmlText(hDC, m_pManager, rcItem, strText.GetData(), iTextColor, \
-				&m_rcLinks[m_nLinks], &m_sLinks[m_nLinks], nLinks, pInfo->nFont, DT_SINGLELINE | pInfo->uTextStyle);
+				CRenderEngine::DrawHtmlText(hDC, m_pManager, rcItem, strText.GetData(), text_color, \
+				&m_rcLinks[m_nLinks], &m_sLinks[m_nLinks], nLinks, text_font, DT_SINGLELINE | pInfo->uTextStyle);
 			else
-				CRenderEngine::DrawText(hDC, m_pManager, rcItem, strText.GetData(), iTextColor, \
-				pInfo->nFont, DT_SINGLELINE | pInfo->uTextStyle);
+				CRenderEngine::DrawText(hDC, m_pManager, rcItem, strText.GetData(), text_color, \
+					text_font, DT_SINGLELINE | pInfo->uTextStyle);
 
 			m_nLinks += nLinks;
 			nLinks = lengthof(m_rcLinks) - m_nLinks; 
@@ -1565,6 +1586,21 @@ Label_ForeImage:
 		ColumCorlorArray[nColum].iBKColor = iBKColor;
 		Invalidate();
 	}
+
+	void CListTextExtElementUI::SetColumTextColor(int nColum, DWORD text_color)
+	{
+		m_arr_colum_text_color[nColum].is_enable = true;
+		m_arr_colum_text_color[nColum].text_color = text_color;
+		Invalidate();
+	}
+
+	void CListTextExtElementUI::SetColumTextFont(int nColum, DWORD text_font)
+	{
+		m_arr_colum_text_font[nColum].is_enable = true;
+		m_arr_colum_text_font[nColum].text_font = text_font;
+		Invalidate();
+	}
+
 	BOOL CListTextExtElementUI::GetColumItemColor(int nColum, DWORD& iBKColor)
 	{
 		if (!ColumCorlorArray[nColum].bEnable)

@@ -2,7 +2,6 @@
 #define __UIMANAGER_H__
 
 #pragma once
-#define WM_USER_SET_DPI WM_USER + 200
 namespace DuiLib {
 	/////////////////////////////////////////////////////////////////////////////////////
 	//
@@ -55,13 +54,18 @@ namespace DuiLib {
 		UIEVENT__LAST,
 	};
 
+
+	/////////////////////////////////////////////////////////////////////////////////////
+	//
+	// 内部保留的消息
 	typedef enum MSGTYPE_UI
 	{
-		// 内部保留消息
-		UIMSG_TRAYICON = WM_USER + 1,
-		// 程序自定义消息
-		UIMSG_USER = WM_USER + 100,
+		UIMSG_TRAYICON = WM_USER + 1,// 托盘消息
+		UIMSG_SET_DPI,				 // DPI
+		WM_MENUCLICK,				 // 菜单消息
+		UIMSG_USER = WM_USER + 100,	 // 程序自定义消息
 	};
+
 	/////////////////////////////////////////////////////////////////////////////////////
 	//
 
@@ -293,7 +297,7 @@ namespace DuiLib {
 
 		bool IsForceUseSharedRes() const;
 		void SetForceUseSharedRes(bool bForce);
-
+		// 注意：只支持简单类型指针，因为只释放内存，不会调用类对象的析构函数
 		void DeletePtr(void* ptr);
 
 		DWORD GetDefaultDisabledColor() const;
